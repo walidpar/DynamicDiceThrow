@@ -1,42 +1,41 @@
 package edu.temple.dicethrow
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
-
-/*
-Our DieThrow application has been refactored to move the dieRoll() logic
-into the ViewModel instead of the Fragment.
-Study the DieViewModel, ButtonFragment, and DieFragment classes to
-see the changes.
-
-Follow the requirements below to have this app function
-in both portrait and landscape configurations.
-The Activity layout files for both Portrait and Landscape are already provided
-*/
 
 class MainActivity : AppCompatActivity(), ButtonFragment.ButtonInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /* TODO 1: Load fragment(s)
-            - Show _only_ ButtonFragment if portrait
-            - show _both_ fragments if Landscape
-          */
+        // TODO 1: Load fragment(s)
+        if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+            // Portrait mode - show only ButtonFragment
+            if (supportFragmentManager.findFragmentById(R.id.buttonFragmentContainer) == null) {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.buttonFragmentContainer, ButtonFragment())
+                    .commit()
+            }
+        } else {
+            //Landscape mode - show both fragments
+            if (supportFragmentManager.findFragmentById(R.id.buttonFragmentContainer) == null) {
+                supportFragmentManager.beginTransaction()
+                    .add(R.id.buttonFragmentContainer, ButtonFragment())
+                    .add(R.id.dieFragmentContainer, DieFragment())
+                    .commit()
+            }
+        }
     }
 
-    /* TODO 2: switch fragments if die rolled and in portrait (no need to switch fragments if Landscape)
-        */
-
-    // This callback function gets invoked when the child Fragment invokes it
-    // Remember to place Fragment transactions on BackStack so then can be reversed
+    // TODO 2: switch fragments if die rolled and in portrait
     override fun buttonClicked() {
-
+        if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.buttonFragmentContainer, DieFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+        // No action needed in landscape as both fragments are already visible
     }
-
-
 }
